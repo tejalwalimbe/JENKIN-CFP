@@ -1,0 +1,53 @@
+
+
+#scp -i ~/keys/app.pem -rp  ~/workspace/Democh ubuntu@10.0.3.18:/home/ubuntu/
+ssh -i ~/keys/app.pem ubuntu@10.0.3.18 '
+cd /home/ubuntu/
+#sudo apt-get update -y
+sudo apt-get install -y python3-pip
+sudo apt-get install -y python3-venv
+sudo apt-get install libmysqlclient-dev
+
+python3 -m venv env
+source env/bin/activate
+pip3 install wheel
+cd /home/ubuntu/Democh/
+pip3 install -r requirements.txt
+
+#pip3 install mysqlclient
+#pip3 install django-environ
+cd /home/ubuntu/Democh/fundoo/
+
+python3  manage.py migrate'
+
+scp -i ~/keys/app.pem -rp  ~/keys/gunicorn.service ubuntu@10.0.3.18:/home/ubuntu/
+ssh -i ~/keys/app.pem ubuntu@10.0.3.18 '
+
+sudo cp /home/ubuntu/gunicorn.service /etc/systemd/system/
+cd /etc/systemd/system
+systemctl enable gunicorn
+sudo systemctl daemon-reload
+sudo systemctl enable gunicorn  
+sudo systemctl start gunicorn  
+sudo systemctl status gunicorn '
+
+#ssh -i ~/keys/app.pem ubuntu@18.213.247.164
+#scp -i ~/keys/app.pem -rp  ~/keys/democh.sh  ubuntu@18.213.247.164:/home/ubuntu/
+
+ssh -i ~/keys/app.pem ubuntu@18.213.247.164 '
+
+sudo apt update
+sudo apt install nginx
+
+cd /etc/nginx
+cd sites-enabled/
+ls
+sudo cp /home/ubuntu/democh.sh /etc/nginx/sites-available/democh.sh  
+cd /etc/nginx/sites-available/
+
+#sudo ln -s /etc/nginx/sites-available/democh.sh  /etc/nginx/sites-enabled/democh.sh
+ls
+ls -lrt
+sudo nginx -s reload
+sudo systemctl start nginx
+sudo systemctl  status nginx
